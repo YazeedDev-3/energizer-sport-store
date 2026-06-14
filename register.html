@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register – Energizer Sport</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+      }
+
+      body {
+        background-image: url("background_pagelogin.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .auth-card {
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #e0e0e0;
+        padding: 36px 32px;
+        width: 380px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      }
+
+      .auth-card .logo {
+        display: block;
+        margin: 0 auto 20px;
+        width: 100px;
+      }
+
+      .auth-card h2 {
+        text-align: center;
+        color: #fff;
+        margin-bottom: 24px;
+        font-size: 1.6rem;
+        letter-spacing: 0.5px;
+      }
+
+      .auth-card label {
+        color: #ccc;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .auth-card .form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 6px;
+      }
+
+      .auth-card .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: #5cb85c;
+        color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(92, 184, 92, 0.25);
+      }
+
+      .auth-card .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .auth-card .terms-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .auth-card .terms-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .auth-card .terms-row label {
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .auth-card .btn-success {
+        background-color: #3d8b3d;
+        border-color: #3d8b3d;
+        font-size: 1rem;
+        padding: 10px;
+        letter-spacing: 0.5px;
+      }
+
+      .auth-card .btn-success:hover {
+        background-color: #2e6b2e;
+        border-color: #2e6b2e;
+      }
+
+      .auth-card .btn-outline-secondary {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #ccc;
+        font-size: 1rem;
+        padding: 10px;
+      }
+
+      .auth-card .btn-outline-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      .auth-card .auth-footer {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 0.88rem;
+        color: #aaa;
+      }
+
+      .auth-card .auth-footer a {
+        color: #5cb85c;
+        text-decoration: none;
+      }
+
+      .auth-card .auth-footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="auth-card">
+      <img class="logo" src="Energizer_Sport_Logo.png" alt="Energizer Sport Logo" />
+      <h2>Create Account</h2>
+      <form action="process_registration" method="post" id="registerForm">
+        <div class="form-group">
+          <label for="username" id="username_label">Username</label>
+          <input id="username" name="username" type="text" class="form-control" required placeholder="Username" />
+        </div>
+        <div class="form-group">
+          <label for="email" id="email_label">Email</label>
+          <input id="email" name="email" type="email" class="form-control" required placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="password" id="password_label">Password</label>
+          <input id="password" name="password" type="password" class="form-control" required placeholder="Password" />
+        </div>
+        <div class="form-group">
+          <label for="confirm_password" id="confirm_password_label">Confirm Password</label>
+          <input id="confirm_password" name="confirm_password" type="password" class="form-control" required placeholder="Confirm Password" />
+        </div>
+        <div class="terms-row">
+          <input id="accept" type="checkbox" required />
+          <label for="accept" id="accept_label">I accept the Terms &amp; Conditions</label>
+        </div>
+        <p id="errorMsg" class="text-danger text-center" style="min-height:1.2em; font-size:0.9rem;"></p>
+        <div class="row no-gutters" style="gap:8px;">
+          <div class="col">
+            <button type="button" class="btn btn-success btn-block" onclick="validateForm()">Register</button>
+          </div>
+          <div class="col">
+            <button type="reset" class="btn btn-outline-secondary btn-block">Clear</button>
+          </div>
+        </div>
+      </form>
+      <div class="auth-footer">
+        Already have an account? <a href="login">Login here</a>
+      </div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("error") === "taken") {
+        document.getElementById("errorMsg").textContent = "Username or email is already taken.";
+      } else if (params.get("error") === "server") {
+        document.getElementById("errorMsg").textContent = "Something went wrong. Please try again.";
+      }
+
+      function validateForm() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirm_password").value;
+        var acceptTerms = document.getElementById("accept").checked;
+
+        if (password !== confirmPassword) {
+          Swal.fire({ icon: "error", title: "Error", text: "Passwords do not match" });
+          document.getElementById("password_label").style.color = "red";
+          document.getElementById("confirm_password_label").style.color = "red";
+          return;
+        } else {
+          document.getElementById("password_label").style.color = "";
+          document.getElementById("confirm_password_label").style.color = "";
+        }
+
+        if (!acceptTerms) {
+          Swal.fire({ icon: "error", title: "Error", text: "You must accept the terms" });
+          document.getElementById("accept_label").style.color = "red";
+          return;
+        } else {
+          document.getElementById("accept_label").style.color = "";
+        }
+
+        document.getElementById("registerForm").submit();
+      }
+    </script>
+  </body>
+</html>

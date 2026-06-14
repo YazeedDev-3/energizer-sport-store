@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders – Energizer Sport</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+      }
+
+      body {
+        background-color: #0d0d0d;
+        color: #e0e0e0;
+        padding-top: 56px;
+      }
+
+      /* ── Navbar active ── */
+      .navbar-dark .nav-link.nav-active { color: #28a745 !important; }
+
+      /* ── Page hero ── */
+      .page-hero {
+        background: linear-gradient(135deg, #0a1a0a, #111);
+        border-bottom: 2px solid #28a745;
+        padding: 40px 20px 28px;
+        text-align: center;
+      }
+      .page-hero h1 { color: #fff; font-size: 1.9rem; font-weight: 700; margin-bottom: 4px; }
+      .page-hero p  { color: #666; margin: 0; }
+
+      /* ── Orders panel ── */
+      .orders-panel {
+        background: #111;
+        border: 1px solid #1e1e1e;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .orders-panel-header {
+        padding: 16px 22px;
+        border-bottom: 1px solid #1e1e1e;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .orders-panel-header h5 {
+        margin: 0;
+        color: #e0e0e0;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .orders-panel-header .order-count {
+        color: #555;
+        font-size: 0.82rem;
+      }
+
+      /* ── Table ── */
+      .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+      }
+      .orders-table thead th {
+        background: #0a150a;
+        color: #28a745;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 12px 18px;
+        border-bottom: 2px solid #28a745;
+        white-space: nowrap;
+        font-weight: 600;
+      }
+      .orders-table tbody tr {
+        border-bottom: 1px solid #171717;
+        transition: background 0.15s;
+      }
+      .orders-table tbody tr:last-child { border-bottom: none; }
+      .orders-table tbody tr:hover { background: #141414; }
+      .orders-table tbody td {
+        padding: 14px 18px;
+        font-size: 0.9rem;
+        color: #bbb;
+        vertical-align: middle;
+      }
+
+      /* ── Cell variants ── */
+      .cell-id    { color: #555; font-size: 0.82rem; }
+      .cell-total { color: #28a745; font-weight: 700; }
+      .cell-note  { color: #666; font-style: italic; font-size: 0.85rem; }
+
+      .badge-payment {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: rgba(40,167,69,0.12);
+        color: #5cb85c;
+        border: 1px solid rgba(40,167,69,0.25);
+        white-space: nowrap;
+      }
+
+      /* ── Empty state ── */
+      .empty-state {
+        text-align: center;
+        padding: 72px 20px;
+        color: #444;
+      }
+      .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+      .empty-state h4 { color: #666; font-size: 1rem; margin-bottom: 8px; }
+      .empty-state p  { color: #444; font-size: 0.88rem; margin-bottom: 22px; }
+
+      /* ── Loader ── */
+      .loader {
+        text-align: center;
+        padding: 60px 20px;
+        color: #444;
+        font-size: 0.9rem;
+      }
+
+      /* ── Responsive: collapse Note on small screens ── */
+      @media (max-width: 600px) {
+        .col-note { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <img class="navbar-brand" src="Energizer_Sport_Logo.png" alt="Energizer Sport Logo" style="width:100px" />
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="our-products">Our Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="search">Search Product</a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="buy">Buy</a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="cart">My Cart <span class="badge badge-success ml-1" id="cartBadge"></span></a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link nav-active" href="orders">My Orders</a>
+        </li>
+        <li class="nav-item admin-only" style="display:none">
+          <a class="nav-link" href="/manage">Admin Panel</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item auth-only" style="display:none">
+          <span class="nav-link" style="color:rgba(255,255,255,0.5);cursor:default;">
+            Welcome, <strong id="navUsername" style="color:#fff;"></strong>
+          </span>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="logout">Logout</a>
+        </li>
+        <li class="nav-item guest-only" style="display:none">
+          <a class="nav-link" href="login">Login</a>
+        </li>
+        <li class="nav-item guest-only" style="display:none">
+          <a class="nav-link" href="register">Register</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Page hero -->
+    <div class="page-hero">
+      <h1>My Orders</h1>
+      <p>Your complete order history</p>
+    </div>
+
+    <!-- Orders panel -->
+    <div class="container mt-4 mb-5">
+      <div class="orders-panel">
+        <div class="orders-panel-header">
+          <h5>Order History</h5>
+          <span class="order-count" id="orderCount"></span>
+        </div>
+
+        <div id="loader" class="loader">Loading orders&hellip;</div>
+
+        <div id="emptyState" class="empty-state" style="display:none;">
+          <div class="icon">&#128230;</div>
+          <h4>You have no orders yet.</h4>
+          <p>Browse our products and place your first order.</p>
+          <a href="our-products" class="btn btn-success px-5">Shop Now</a>
+        </div>
+
+        <div class="table-responsive" id="tableWrap" style="display:none;">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th class="col-note">Note</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="home" style="color:#555;font-size:0.88rem;">&#8592; Back to Home</a>
+      </div>
+    </div>
+
+    <script>
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
+
+      function formatDate(raw) {
+        return new Date(raw).toLocaleString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+      }
+
+      async function loadOrders() {
+        try {
+          var orders = await fetch('/api/my-orders').then(function(r) { return r.json(); });
+
+          document.getElementById('loader').style.display = 'none';
+
+          if (!orders.length) {
+            document.getElementById('emptyState').style.display = 'block';
+            return;
+          }
+
+          document.getElementById('orderCount').textContent =
+            orders.length + ' order' + (orders.length !== 1 ? 's' : '');
+
+          var rows = orders.map(function(o) {
+            var note = (o.note || '').trim();
+            return '<tr>' +
+              '<td class="cell-id">#' + o.id + '</td>' +
+              '<td class="cell-total">SAR ' + parseFloat(o.total).toFixed(2) + '</td>' +
+              '<td><span class="badge-payment">' + esc(o.payment_type) + '</span></td>' +
+              '<td class="cell-note col-note">' + (note ? esc(note) : '&mdash;') + '</td>' +
+              '<td style="white-space:nowrap;color:#777;font-size:0.85rem;">' + formatDate(o.created_at) + '</td>' +
+            '</tr>';
+          }).join('');
+
+          document.getElementById('ordersBody').innerHTML = rows;
+          document.getElementById('tableWrap').style.display = 'block';
+        } catch (err) {
+          document.getElementById('loader').textContent = 'Could not load orders. Please try again.';
+        }
+      }
+
+      /* ── Cart badge ── */
+      (function() {
+        var count = JSON.parse(localStorage.getItem('energizerCart') || '[]')
+          .reduce(function(s, i) { return s + i.quantity; }, 0);
+        var b = document.getElementById('cartBadge');
+        if (b) b.textContent = count > 0 ? count : '';
+      })();
+    </script>
+
+    <script>
+      fetch("/api/session")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.loggedIn) {
+            window.location.href = '/login?next=/orders';
+            return;
+          }
+          document.querySelectorAll('.auth-only').forEach(function(el) { el.style.display = ''; });
+          if (data.username) {
+            var el = document.getElementById('navUsername');
+            if (el) el.textContent = data.username;
+          }
+          if (data.role === 'admin') {
+            document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = ''; });
+          }
+          loadOrders();
+        });
+    </script>
+  </body>
+</html>

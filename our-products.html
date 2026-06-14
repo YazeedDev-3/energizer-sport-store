@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Products – Energizer Sport</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+      }
+
+      body {
+        background-color: #0d0d0d;
+        color: #e0e0e0;
+        padding-top: 56px;
+      }
+
+      /* ── Navbar active ── */
+      .navbar-dark .nav-link.nav-active { color: #28a745 !important; }
+
+      /* ── Page hero ── */
+      .page-hero {
+        background: linear-gradient(135deg, #0a1a0a, #111);
+        border-bottom: 2px solid #28a745;
+        padding: 48px 20px 32px;
+        text-align: center;
+      }
+      .page-hero h1 { color: #fff; font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
+      .page-hero p  { color: #777; margin: 0; }
+
+      /* ── Product Grid ── */
+      .product-card {
+        background: #111;
+        border: 1px solid #1e1e1e;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+      }
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 28px rgba(40, 167, 69, 0.18);
+        border-color: #28a745;
+      }
+
+      .product-card-img {
+        background: #0a0a0a;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .product-card-img img {
+        max-height: 160px;
+        max-width: 100%;
+        object-fit: contain;
+      }
+
+      .product-card-body {
+        padding: 16px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .product-card-body h5 {
+        color: #fff;
+        font-size: 0.98rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        line-height: 1.4;
+      }
+      .product-price {
+        color: #28a745;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-top: auto;
+        margin-bottom: 14px;
+      }
+
+      /* ── Add to Cart button ── */
+      .btn-cart {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 9px 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+        transition: background 0.2s, transform 0.1s;
+      }
+      .btn-cart:hover  { background: #218838; }
+      .btn-cart:active { transform: scale(0.97); }
+
+      /* ── Loading / empty ── */
+      .state-msg {
+        text-align: center;
+        padding: 80px 20px;
+        color: #444;
+        font-size: 1rem;
+      }
+      .state-msg .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+      /* ── Toast ── */
+      #cartToast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        background: #1e7e34;
+        color: #fff;
+        padding: 12px 22px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+        font-weight: 600;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.28s;
+        z-index: 9999;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+        max-width: 280px;
+      }
+      #cartToast.show { opacity: 1; }
+    </style>
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <img class="navbar-brand" src="Energizer_Sport_Logo.png" alt="Energizer Sport Logo" style="width:100px" />
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-active" href="our-products">Our Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="search">Search Product</a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="buy">Buy</a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="cart">My Cart <span class="badge badge-success ml-1" id="cartBadge"></span></a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="orders">My Orders</a>
+        </li>
+        <li class="nav-item admin-only" style="display:none">
+          <a class="nav-link" href="/manage">Admin Panel</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item auth-only" style="display:none">
+          <span class="nav-link" style="color:rgba(255,255,255,0.5);cursor:default;">
+            Welcome, <strong id="navUsername" style="color:#fff;"></strong>
+          </span>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="logout">Logout</a>
+        </li>
+        <li class="nav-item guest-only" style="display:none">
+          <a class="nav-link" href="login">Login</a>
+        </li>
+        <li class="nav-item guest-only" style="display:none">
+          <a class="nav-link" href="register">Register</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Page hero -->
+    <div class="page-hero">
+      <h1>Our Products</h1>
+      <p>Premium supplements for your performance goals</p>
+    </div>
+
+    <!-- Product grid -->
+    <div class="container mt-4 mb-5">
+      <div id="stateMsg" class="state-msg">
+        <div class="icon">&#9203;</div>
+        <div>Loading products&hellip;</div>
+      </div>
+      <div class="row" id="productGrid"></div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="cartToast"></div>
+
+    <script>
+      /* ── Auth state (populated by session fetch below) ── */
+      var isLoggedIn = false;
+
+      /* ── Cart helpers ── */
+      function getCart() {
+        return JSON.parse(localStorage.getItem('energizerCart') || '[]');
+      }
+      function saveCart(c) {
+        localStorage.setItem('energizerCart', JSON.stringify(c));
+      }
+      function addToCart(id, title, price, image) {
+        if (!isLoggedIn) {
+          Swal.fire({
+            title: 'Login Required',
+            text: 'Please login to add items to your cart.',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Login',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#28a745',
+            background: '#111',
+            color: '#e0e0e0',
+          }).then(function(result) {
+            if (result.isConfirmed) {
+              window.location.href = '/login?next=/our-products';
+            }
+          });
+          return;
+        }
+        var cart = getCart();
+        var existing = cart.find(function(i) { return i.id === id; });
+        if (existing) {
+          existing.quantity++;
+        } else {
+          cart.push({ id: id, title: title, price: price, quantity: 1, image: image });
+        }
+        saveCart(cart);
+        updateNavBadge();
+        showToast('✓ Added: ' + title);
+      }
+      function updateNavBadge() {
+        var count = getCart().reduce(function(s, i) { return s + i.quantity; }, 0);
+        var b = document.getElementById('cartBadge');
+        if (b) b.textContent = count > 0 ? count : '';
+      }
+
+      /* ── Toast ── */
+      var toastTimer = null;
+      function showToast(msg) {
+        var t = document.getElementById('cartToast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2200);
+      }
+
+      /* ── HTML escape ── */
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      /* ── Load products ── */
+      async function loadProducts() {
+        try {
+          var products = await fetch('/process_index').then(function(r) { return r.json(); });
+          var stateMsg = document.getElementById('stateMsg');
+          var grid = document.getElementById('productGrid');
+
+          stateMsg.style.display = 'none';
+
+          if (!products.length) {
+            stateMsg.innerHTML = '<div class="icon">&#128722;</div><div>No products available yet.</div>';
+            stateMsg.style.display = 'block';
+            return;
+          }
+
+          grid.innerHTML = products.map(function(p) {
+            var price = parseFloat(p.price).toFixed(2);
+            return '<div class="col-lg-3 col-md-4 col-sm-6 mb-4">' +
+              '<div class="product-card">' +
+                '<div class="product-card-img">' +
+                  '<img src="' + esc(p.image) + '" alt="' + esc(p.title) + '" onerror="this.style.opacity=\'0\'" />' +
+                '</div>' +
+                '<div class="product-card-body">' +
+                  '<h5>' + esc(p.title) + '</h5>' +
+                  '<div class="product-price">SAR ' + price + '</div>' +
+                  '<button class="btn-cart"' +
+                    ' data-id="' + p.id + '"' +
+                    ' data-title="' + esc(p.title) + '"' +
+                    ' data-price="' + p.price + '"' +
+                    ' data-image="' + esc(p.image) + '">' +
+                    '+ Add to Cart' +
+                  '</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+
+          /* Attach click handlers via data attributes (safe, no inline eval) */
+          grid.querySelectorAll('.btn-cart').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var id    = parseInt(btn.dataset.id);
+              var title = btn.dataset.title;
+              var price = parseFloat(btn.dataset.price);
+              var image = btn.dataset.image;
+              addToCart(id, title, price, image);
+            });
+          });
+
+          updateNavBadge();
+        } catch (err) {
+          var stateMsg = document.getElementById('stateMsg');
+          stateMsg.innerHTML = '<div class="icon">&#9888;</div><div>Could not load products. Please try again.</div>';
+          stateMsg.style.display = 'block';
+        }
+      }
+
+      loadProducts();
+    </script>
+
+    <script>
+      fetch("/api/session")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          isLoggedIn = data.loggedIn;
+          var show = data.loggedIn ? ".auth-only" : ".guest-only";
+          document.querySelectorAll(show).forEach(function(el) { el.style.display = ""; });
+          if (data.loggedIn && data.username) {
+            var el = document.getElementById("navUsername");
+            if (el) el.textContent = data.username;
+          }
+          if (data.role === "admin") {
+            document.querySelectorAll(".admin-only").forEach(function(el) { el.style.display = ""; });
+          }
+        });
+    </script>
+  </body>
+</html>

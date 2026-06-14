@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Admin Panel – Energizer Sport</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #1a1a2e;
+        color: #e0e0e0;
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* ===== SIDEBAR ===== */
+      .admin-sidebar {
+        width: 230px;
+        min-height: 100vh;
+        background-color: #0d0d1a;
+        border-right: 2px solid #c0392b;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+      }
+
+      .sidebar-brand {
+        padding: 24px 20px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        text-align: center;
+      }
+
+      .sidebar-brand img {
+        width: 76px;
+        margin-bottom: 10px;
+      }
+
+      .sidebar-brand .brand-name {
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+
+      .sidebar-brand .brand-sub {
+        font-size: 0.68rem;
+        color: #c0392b;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        margin-top: 2px;
+      }
+
+      .sidebar-nav {
+        list-style: none;
+        padding: 14px 0;
+        flex: 1;
+      }
+
+      .sidebar-nav li {
+        padding: 13px 22px;
+        cursor: pointer;
+        color: #999;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        border-left: 3px solid transparent;
+        transition: all 0.15s;
+        user-select: none;
+      }
+
+      .sidebar-nav li:hover {
+        color: #fff;
+        background-color: rgba(255,255,255,0.04);
+      }
+
+      .sidebar-nav li.active {
+        color: #fff;
+        background-color: rgba(192,57,43,0.1);
+        border-left-color: #c0392b;
+      }
+
+      .sidebar-nav li .nav-icon {
+        font-size: 1rem;
+        opacity: 0.7;
+      }
+
+      .sidebar-footer {
+        padding: 14px 22px;
+        border-top: 1px solid rgba(255,255,255,0.07);
+      }
+
+      .sidebar-footer a {
+        color: #777;
+        font-size: 0.83rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .sidebar-footer a:hover {
+        color: #ccc;
+      }
+
+      /* ===== MAIN AREA ===== */
+      .admin-main {
+        margin-left: 230px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .admin-topbar {
+        background-color: #111827;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding: 15px 28px;
+      }
+
+      .admin-topbar .page-title {
+        font-size: 1.15rem;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      .admin-topbar .page-sub {
+        font-size: 0.78rem;
+        color: #777;
+        margin-top: 2px;
+      }
+
+      .admin-content {
+        padding: 26px 28px;
+        flex: 1;
+      }
+
+      /* ===== SECTIONS ===== */
+      .admin-section { display: none; }
+      .admin-section.active { display: block; }
+
+      /* ===== DATA CARD ===== */
+      .data-card {
+        background-color: #16213e;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+      }
+
+      .data-card-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .data-card-header h5 {
+        margin: 0;
+        color: #ddd;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* ===== TABLE ===== */
+      .data-table {
+        width: 100%;
+        margin: 0;
+        color: #d8d8d8;
+      }
+
+      .data-table thead th {
+        background-color: #0f3460;
+        color: #bbb;
+        border: none;
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        letter-spacing: 0.6px;
+        padding: 11px 16px;
+        white-space: nowrap;
+      }
+
+      .data-table tbody tr {
+        border-color: rgba(255,255,255,0.04);
+      }
+
+      .data-table tbody tr:nth-child(odd)  { background-color: rgba(255,255,255,0.025); }
+      .data-table tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.01); }
+      .data-table tbody tr:hover           { background-color: rgba(255,255,255,0.055); }
+
+      .data-table td {
+        border-color: rgba(255,255,255,0.04);
+        vertical-align: middle;
+        padding: 9px 16px;
+        font-size: 0.88rem;
+      }
+
+      .data-table td .btn {
+        font-size: 0.76rem;
+        padding: 3px 9px;
+        margin: 1px;
+      }
+
+      /* ===== ROLE BADGES ===== */
+      .role-badge {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .role-badge.admin    { background-color: rgba(192,57,43,0.25); color: #e74c3c; border: 1px solid rgba(192,57,43,0.4); }
+      .role-badge.customer { background-color: rgba(15,52,96,0.4);   color: #7faadd; border: 1px solid rgba(15,52,96,0.6); }
+
+      /* ===== ADD BUTTON ===== */
+      .btn-add {
+        background-color: #1e7e34;
+        border-color: #1e7e34;
+        color: #fff;
+        font-size: 0.82rem;
+        padding: 5px 14px;
+        border-radius: 5px;
+      }
+
+      .btn-add:hover {
+        background-color: #186429;
+        border-color: #186429;
+        color: #fff;
+      }
+
+      /* ===== MODAL ===== */
+      .modal-content {
+        background-color: #16213e;
+        color: #e0e0e0;
+        border: 1px solid #0f3460;
+      }
+
+      .modal-header {
+        background-color: #0f3460;
+        border-bottom: 2px solid #c0392b;
+        padding: 14px 20px;
+      }
+
+      .modal-title {
+        color: #fff;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .modal-body label {
+        color: #aaa;
+        font-size: 0.85rem;
+      }
+
+      .modal-body .form-control {
+        background-color: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.13);
+        color: #fff;
+      }
+
+      .modal-body .form-control:focus {
+        background-color: rgba(255,255,255,0.11);
+        border-color: #c0392b;
+        color: #fff;
+        box-shadow: 0 0 0 0.15rem rgba(192,57,43,0.2);
+      }
+
+      .modal-body .form-control option { background-color: #16213e; }
+
+      .modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
+
+      #edit, #picd, #insert, #del { display: none; }
+
+      /* ===== EMPTY STATE ===== */
+      .empty-row td {
+        text-align: center;
+        padding: 40px !important;
+        color: #555;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <nav class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="Energizer_Sport_Logo.png" alt="Energizer Sport" />
+        <div class="brand-name">Energizer Sport</div>
+        <div class="brand-sub">Admin Panel</div>
+      </div>
+
+      <ul class="sidebar-nav" id="sidebarNav">
+        <li class="active" data-section="products" onclick="showSection('products')">
+          <span class="nav-icon">&#9707;</span> Products
+        </li>
+        <li data-section="users" onclick="showSection('users')">
+          <span class="nav-icon">&#9786;</span> Users
+        </li>
+        <li data-section="orders" onclick="showSection('orders')">
+          <span class="nav-icon">&#9783;</span> Orders
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="/home">&#8592; Back to Site</a>
+      </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <div class="page-title" id="topbarTitle">Products</div>
+        <div class="page-sub"   id="topbarSub">Manage your product catalog</div>
+      </div>
+
+      <div class="admin-content">
+
+        <!-- PRODUCTS -->
+        <div id="section-products" class="admin-section active">
+          <div class="data-card">
+            <div class="data-card-header">
+              <h5>Product List</h5>
+              <button
+                class="btn btn-add"
+                onclick="insertproduct()"
+                data-toggle="modal"
+                data-target="#productModal"
+              >+ Add Product</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table table" id="productsTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- USERS -->
+        <div id="section-users" class="admin-section">
+          <div class="data-card">
+            <div class="data-card-header">
+              <h5>Registered Users</h5>
+              <button class="btn btn-add" data-toggle="modal" data-target="#userModal" onclick="openAddUserModal()">+ Add User</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table table" id="usersTable"></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div id="section-orders" class="admin-section">
+          <div class="data-card">
+            <div class="data-card-header">
+              <h5>Order History</h5>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table table" id="ordersTable"></table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== PRODUCT MODAL ===== -->
+    <div class="modal fade" id="productModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Manage Product</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="ti">Title</label>
+              <input type="text" name="title" class="form-control" id="ti" />
+            </div>
+            <div class="form-group">
+              <label for="de">Description</label>
+              <input type="text" class="form-control" id="de" />
+            </div>
+            <div class="form-group">
+              <label for="pr">Price ($)</label>
+              <input type="number" class="form-control" id="pr" min="0" step="0.01" />
+            </div>
+            <div class="form-group">
+              <label for="ca">Category</label>
+              <select class="form-control" id="ca">
+                <option value="0">Please select</option>
+                <option value="1">Protein powder</option>
+                <option value="2">Creatine</option>
+                <option value="3">Pre-workout</option>
+                <option value="4">Snacks</option>
+                <option value="5">Shaker</option>
+              </select>
+            </div>
+            <div class="text-center mb-2">
+              <img src="" alt="" id="mm" width="150px" style="border-radius:5px;" />
+            </div>
+            <div id="picd" class="form-group">
+              <label>Product Image</label>
+              <input type="file" id="ff" class="form-control" accept="image/png, image/jpeg" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="insert" class="btn btn-success"   data-dismiss="modal" onclick="insert()">Insert</button>
+            <button id="edit"   class="btn btn-warning"   data-dismiss="modal" onclick="update()">Update</button>
+            <button id="del"    class="btn btn-danger"    data-dismiss="modal" onclick="delet()">Delete</button>
+            <button             class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADD USER MODAL ===== -->
+    <div class="modal fade" id="userModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Add New User</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="u-username">Username</label>
+              <input type="text" id="u-username" class="form-control" placeholder="Username" />
+            </div>
+            <div class="form-group">
+              <label for="u-email">Email</label>
+              <input type="email" id="u-email" class="form-control" placeholder="you@example.com" />
+            </div>
+            <div class="form-group">
+              <label for="u-password">Password</label>
+              <input type="password" id="u-password" class="form-control" placeholder="Password" />
+            </div>
+            <div class="form-group">
+              <label for="u-role">Role</label>
+              <select id="u-role" class="form-control">
+                <option value="customer">Customer</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <p id="u-error" class="text-danger" style="min-height:1.2em; font-size:0.85rem; margin-bottom:0;"></p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success" onclick="submitAddUser()">Create User</button>
+            <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ===== NAVIGATION =====
+      const META = {
+        products: { title: "Products", sub: "Manage your product catalog" },
+        users:    { title: "Users",    sub: "View and manage registered users" },
+        orders:   { title: "Orders",   sub: "View all customer orders" },
+      };
+
+      function showSection(name) {
+        document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
+        document.querySelectorAll("#sidebarNav li").forEach(li => li.classList.remove("active"));
+        document.getElementById("section-" + name).classList.add("active");
+        document.querySelector("#sidebarNav li[data-section='" + name + "']").classList.add("active");
+        document.getElementById("topbarTitle").textContent = META[name].title;
+        document.getElementById("topbarSub").textContent   = META[name].sub;
+        if (name === "users")  loadUsers();
+        if (name === "orders") loadOrders();
+      }
+
+      // ===== PRODUCTS =====
+      loadProducts();
+
+      async function loadProducts() {
+        const rows = await fetch("/process_index").then(r => r.json());
+        let ta = "<thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody>";
+        if (!rows.length) {
+          ta += "<tr class='empty-row'><td colspan='4'>No products found</td></tr>";
+        } else {
+          rows.forEach(p => {
+            ta += `<tr>
+              <td>${p.id}</td>
+              <td>${p.title}</td>
+              <td>$${p.price}</td>
+              <td>
+                <button class='btn btn-info btn-sm'    onclick="getproduct('${esc(p.title)}')"    data-toggle='modal' data-target='#productModal'>Detail</button>
+                <button class='btn btn-warning btn-sm' onclick="editproduct('${esc(p.title)}')"   data-toggle='modal' data-target='#productModal'>Edit</button>
+                <button class='btn btn-danger btn-sm'  onclick="deleteproduct('${esc(p.title)}')" data-toggle='modal' data-target='#productModal'>Delete</button>
+              </td>
+            </tr>`;
+          });
+        }
+        ta += "</tbody>";
+        document.getElementById("productsTable").innerHTML = ta;
+      }
+
+      function resetModal() {
+        ["insert","edit","del","picd"].forEach(id => document.getElementById(id).style.display = "none");
+        ["ti","de","pr"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("ca").value = "0";
+        document.getElementById("mm").src = "";
+        document.getElementById("ff").value = "";
+      }
+
+      async function getproduct(title) {
+        const x = await fetch("/process_detail?title=" + encodeURIComponent(title)).then(r => r.json());
+        document.getElementById("ti").value = x.title;
+        document.getElementById("de").value = x.description;
+        document.getElementById("pr").value = x.price;
+        document.getElementById("ca").value = x.cata;
+        document.getElementById("mm").src = "/" + x.image;
+      }
+
+      function editproduct(title) {
+        resetModal();
+        document.getElementById("edit").style.display = "block";
+        document.getElementById("picd").style.display = "block";
+        getproduct(title);
+      }
+
+      function deleteproduct(title) {
+        resetModal();
+        document.getElementById("del").style.display = "block";
+        getproduct(title);
+      }
+
+      function insertproduct() {
+        resetModal();
+        document.getElementById("insert").style.display = "block";
+        document.getElementById("picd").style.display   = "block";
+      }
+
+      async function insert() {
+        const data = new FormData();
+        data.append("upfile",      document.getElementById("ff").files[0]);
+        data.append("title",       document.getElementById("ti").value);
+        data.append("description", document.getElementById("de").value);
+        data.append("price",       document.getElementById("pr").value);
+        data.append("cata",        document.getElementById("ca").value);
+        await fetch("/process_insert", { method: "POST", body: data });
+        loadProducts();
+      }
+
+      async function update() {
+        const data = new FormData();
+        data.append("upfile",      document.getElementById("ff").files[0]);
+        data.append("title",       document.getElementById("ti").value);
+        data.append("description", document.getElementById("de").value);
+        data.append("price",       document.getElementById("pr").value);
+        data.append("cata",        document.getElementById("ca").value);
+        await fetch("/process_update", { method: "PUT", body: data });
+        loadProducts();
+      }
+
+      async function delet() {
+        const title = document.getElementById("ti").value;
+        const result = await Swal.fire({
+          title: "Delete Product",
+          text: `Delete "${title}"? This cannot be undone.`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#c0392b",
+          confirmButtonText: "Yes, delete",
+          background: "#16213e",
+          color: "#e0e0e0",
+        });
+        if (result.isConfirmed) {
+          await fetch("/process_delete?title=" + encodeURIComponent(title), {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json;charset=utf-8" },
+          });
+          loadProducts();
+        }
+      }
+
+      // ===== USERS =====
+      async function loadUsers() {
+        const users = await fetch("/api/admin/users").then(r => r.json());
+        let ta = "<thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead><tbody>";
+        if (!users.length) {
+          ta += "<tr class='empty-row'><td colspan='6'>No users found</td></tr>";
+        } else {
+          users.forEach(u => {
+            const badge   = `<span class='role-badge ${u.role}'>${u.role}</span>`;
+            const joined  = new Date(u.created_at).toLocaleDateString();
+            ta += `<tr>
+              <td>${u.id}</td>
+              <td>${u.username}</td>
+              <td>${u.email}</td>
+              <td>${badge}</td>
+              <td>${joined}</td>
+              <td>
+                <button class='btn btn-warning btn-sm' onclick="toggleRole(${u.id}, '${u.role}')">Toggle Role</button>
+                <button class='btn btn-danger btn-sm'  onclick="deleteUser(${u.id}, '${esc(u.username)}')">Delete</button>
+              </td>
+            </tr>`;
+          });
+        }
+        ta += "</tbody>";
+        document.getElementById("usersTable").innerHTML = ta;
+      }
+
+      async function toggleRole(id, currentRole) {
+        const newRole = currentRole === "admin" ? "customer" : "admin";
+        const result = await Swal.fire({
+          title: "Change Role",
+          text: `Change this user's role to "${newRole}"?`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#0f3460",
+          confirmButtonText: "Yes, change it",
+          background: "#16213e",
+          color: "#e0e0e0",
+        });
+        if (result.isConfirmed) {
+          await fetch(`/api/admin/users/${id}/role`, { method: "PUT" });
+          loadUsers();
+        }
+      }
+
+      async function deleteUser(id, username) {
+        const result = await Swal.fire({
+          title: "Delete User",
+          text: `Permanently delete "${username}"? This cannot be undone.`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#c0392b",
+          confirmButtonText: "Yes, delete",
+          background: "#16213e",
+          color: "#e0e0e0",
+        });
+        if (result.isConfirmed) {
+          await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+          loadUsers();
+        }
+      }
+
+      function openAddUserModal() {
+        document.getElementById("u-username").value = "";
+        document.getElementById("u-email").value    = "";
+        document.getElementById("u-password").value = "";
+        document.getElementById("u-role").value     = "customer";
+        document.getElementById("u-error").textContent = "";
+      }
+
+      async function submitAddUser() {
+        const username = document.getElementById("u-username").value.trim();
+        const email    = document.getElementById("u-email").value.trim();
+        const password = document.getElementById("u-password").value;
+        const role     = document.getElementById("u-role").value;
+        const errEl    = document.getElementById("u-error");
+
+        if (!username || !email || !password) {
+          errEl.textContent = "All fields are required.";
+          return;
+        }
+
+        const res  = await fetch("/api/admin/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password, role }),
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          errEl.textContent = data.error;
+          return;
+        }
+
+        $("#userModal").modal("hide");
+        loadUsers();
+      }
+
+      // ===== ORDERS =====
+      async function loadOrders() {
+        const orders = await fetch("/api/admin/orders").then(r => r.json());
+        let ta = "<thead><tr><th>ID</th><th>Username</th><th>Total</th><th>Payment</th><th>Note</th><th>Date</th></tr></thead><tbody>";
+        if (!orders.length) {
+          ta += "<tr class='empty-row'><td colspan='6'>No orders yet</td></tr>";
+        } else {
+          orders.forEach(o => {
+            const date = new Date(o.created_at).toLocaleString();
+            ta += `<tr>
+              <td>${o.id}</td>
+              <td>${o.username}</td>
+              <td>$${o.total}</td>
+              <td>${o.payment_type}</td>
+              <td>${o.note || "—"}</td>
+              <td>${date}</td>
+            </tr>`;
+          });
+        }
+        ta += "</tbody>";
+        document.getElementById("ordersTable").innerHTML = ta;
+      }
+
+      // ===== UTIL =====
+      function esc(str) {
+        return String(str).replace(/'/g, "\\'");
+      }
+    </script>
+  </body>
+</html>

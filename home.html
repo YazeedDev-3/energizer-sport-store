@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Energizer Sport</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      function initMap() {
+        var location = { lat: 24.489305, lng: 39.582069 };
+        var map = new google.maps.Map(document.getElementById("map"), { zoom: 8, center: location });
+        new google.maps.Marker({ position: location, map: map });
+      }
+    </script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+      }
+
+      body {
+        background-color: #0d0d0d;
+        color: #e0e0e0;
+        padding-top: 56px;
+      }
+
+      /* ── Navbar accent ── */
+      .navbar-dark .nav-link.nav-active {
+        color: #28a745 !important;
+      }
+
+      /* ── Carousel ── */
+      #crs { position: relative; }
+      #crs .carousel-item {
+        height: clamp(220px, 48vw, 520px);
+        background: #000;
+        overflow: hidden;
+      }
+      #crs .carousel-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .carousel-hero-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.75));
+        padding: 60px 20px 36px;
+        text-align: center;
+        z-index: 10;
+        pointer-events: none;
+      }
+      .carousel-hero-overlay h2 {
+        color: #fff;
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        margin-bottom: 16px;
+      }
+      .carousel-hero-overlay .btn {
+        pointer-events: all;
+      }
+
+      /* ── About section ── */
+      .about-section {
+        background: linear-gradient(135deg, #0a1a0a, #111);
+        border-top: 3px solid #28a745;
+        border-bottom: 1px solid #1a1a1a;
+        padding: 64px 20px;
+      }
+      .about-section h1 {
+        color: #fff;
+      }
+      .about-section p {
+        color: #aaa;
+        max-width: 800px;
+        margin: 0 auto 28px;
+      }
+
+      /* ── Gallery ── */
+      #gallery { padding: 48px 0; }
+      #gallery .section-title {
+        color: #e0e0e0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 28px;
+      }
+      .gallery-img-wrap {
+        overflow: hidden;
+        border-radius: 10px;
+        border: 1px solid #1e1e1e;
+        background: #111;
+        margin-bottom: 20px;
+      }
+      .enlarging-image {
+        transition: transform 0.3s;
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .enlarging-image:hover { transform: scale(1.06); }
+
+      /* ── Athletes ── */
+      .athletes-section {
+        padding: 56px 0;
+        border-top: 1px solid #1a1a1a;
+      }
+      .athletes-section .section-title {
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .athletes-section .section-sub {
+        color: #777;
+        margin-bottom: 36px;
+      }
+      .athlete-name {
+        color: #e0e0e0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 14px;
+      }
+      .athlete-img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #28a745;
+      }
+
+      /* ── Footer ── */
+      footer {
+        background-color: #111 !important;
+        border-top: 2px solid #1e1e1e;
+      }
+      footer h5 { color: #e0e0e0; }
+      footer p, footer a { color: #888; font-size: 0.9rem; }
+      footer a:hover { color: #28a745; text-decoration: none; }
+
+      /* ── Divider ── */
+      .section-divider {
+        border: none;
+        border-top: 1px solid #1e1e1e;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <img class="navbar-brand" src="Energizer_Sport_Logo.png" alt="Energizer Sport Logo" style="width:100px" />
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-active" href="home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="our-products">Our Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="search">Search Product</a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="buy">Buy</a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="cart">My Cart <span class="badge badge-success ml-1" id="cartBadge"></span></a>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="orders">My Orders</a>
+        </li>
+        <li class="nav-item admin-only" style="display:none">
+          <a class="nav-link" href="/manage">Admin Panel</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item auth-only" style="display:none">
+          <span class="nav-link" style="color:rgba(255,255,255,0.5);cursor:default;">
+            Welcome, <strong id="navUsername" style="color:#fff;"></strong>
+          </span>
+        </li>
+        <li class="nav-item auth-only" style="display:none">
+          <a class="nav-link" href="logout">Logout</a>
+        </li>
+        <li class="nav-item guest-only" style="display:none">
+          <a class="nav-link" href="login">Login</a>
+        </li>
+        <li class="nav-item guest-only" style="display:none">
+          <a class="nav-link" href="register">Register</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Carousel with hero overlay -->
+    <div style="position:relative;">
+      <div id="crs" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="crs_img_1.jpg" alt="Energizer Sport" />
+          </div>
+          <div class="carousel-item">
+            <img src="crs_img_2.jpg" alt="Energizer Sport" />
+          </div>
+          <div class="carousel-item">
+            <img src="crs_img_3.jpg" alt="Energizer Sport" />
+          </div>
+          <div class="carousel-item">
+            <img src="crs_img_4.jpg" alt="Energizer Sport" />
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#crs" data-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#crs" data-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </a>
+      </div>
+      <div class="carousel-hero-overlay">
+        <h2>Fuel Your Performance</h2>
+        <a href="our-products" class="btn btn-success btn-lg px-5">Shop Now &rarr;</a>
+      </div>
+    </div>
+
+    <!-- About section -->
+    <div class="about-section">
+      <div class="container text-center">
+        <h1 class="display-4 mb-4">Energizer Sport</h1>
+        <p class="lead">
+          Energizer Sport is dedicated to providing high-quality sports supplements designed
+          specifically for athletes. Our products include protein powders, pre-workout formulas,
+          vitamins, and healthy snacks to help you achieve your fitness goals. Whether you're
+          looking to build muscle, boost energy, or enhance your overall performance, we have
+          the right supplement for you.
+        </p>
+        <a href="our-products" class="btn btn-outline-success btn-lg px-5">Browse Products</a>
+      </div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <!-- Gallery -->
+    <section id="gallery" class="container">
+      <h2 class="section-title text-center">Our Products</h2>
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="product_web1 (1).png" alt="Product" class="enlarging-image" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Chocolate_Protein.png" alt="Chocolate Protein" class="enlarging-image" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Vanilla_Protein.png" alt="Vanilla Protein" class="enlarging-image" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Shaker.png" alt="Shaker" class="enlarging-image" />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Vitamins.png" alt="Vitamins" class="enlarging-image" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Snack.png" alt="Snack" class="enlarging-image" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Creatine.png" alt="Creatine" class="enlarging-image" />
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="gallery-img-wrap">
+            <img src="Pre-Workout.png" alt="Pre-Workout" class="enlarging-image" />
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-3 mb-2">
+        <a href="our-products" class="btn btn-success px-5">View All Products</a>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- Athletes -->
+    <section class="athletes-section">
+      <div class="container">
+        <h2 class="section-title text-center">Our Featured Athletes</h2>
+        <p class="section-sub text-center">
+          Top athletes who trust Energizer Sport supplements
+        </p>
+        <div class="row justify-content-center">
+          <div class="col-sm-4 text-center mb-4">
+            <img src="abo_rbe3a.jpg" class="athlete-img" alt="Abo Rabea" />
+            <p class="athlete-name">ABO RABEA</p>
+          </div>
+          <div class="col-sm-4 text-center mb-4">
+            <img src="cbum.png" class="athlete-img" alt="CBUM" />
+            <p class="athlete-name">CBUM</p>
+          </div>
+          <div class="col-sm-4 text-center mb-4">
+            <img src="big_ramy.jpg" class="athlete-img" alt="Big Ramy" />
+            <p class="athlete-name">BIG RAMY</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-0">
+      <div class="container">
+        <div class="row py-4">
+          <div class="col-md-6">
+            <h5>Contact Us</h5>
+            <p>
+              <img src="email_logo.jpg" alt="" style="width:22px;margin-right:6px;" />
+              info@energizersport.com
+            </p>
+            <p>
+              <a href="https://www.facebook.com/">
+                <img src="facbook.png" alt="" style="width:22px;margin-right:6px;" />Facebook
+              </a>
+            </p>
+            <p>
+              <a href="https://web.telegram.org/k/">
+                <img src="telegram-black.jpg" alt="" style="width:22px;margin-right:6px;" />Telegram
+              </a>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h5>Our Location</h5>
+            <div id="map" class="embed-responsive embed-responsive-16by9" style="border-radius:8px;overflow:hidden;"></div>
+          </div>
+        </div>
+        <div class="text-center py-2" style="border-top:1px solid #1e1e1e;color:#444;font-size:0.8rem;">
+          &copy; 2025 Energizer Sport. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoLVOv6pfvrJ2NX4rezpyO9zxqxXAV5eo&callback=initMap" async></script>
+
+    <script>
+      function getCart() { return JSON.parse(localStorage.getItem('energizerCart') || '[]'); }
+      function updateNavBadge() {
+        var count = getCart().reduce(function(s, i) { return s + i.quantity; }, 0);
+        var b = document.getElementById('cartBadge');
+        if (b) b.textContent = count > 0 ? count : '';
+      }
+      updateNavBadge();
+    </script>
+    <script>
+      fetch("/api/session")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var show = data.loggedIn ? ".auth-only" : ".guest-only";
+          document.querySelectorAll(show).forEach(function(el) { el.style.display = ""; });
+          if (data.loggedIn && data.username) {
+            var el = document.getElementById("navUsername");
+            if (el) el.textContent = data.username;
+          }
+          if (data.role === "admin") {
+            document.querySelectorAll(".admin-only").forEach(function(el) { el.style.display = ""; });
+          }
+        });
+    </script>
+  </body>
+</html>
